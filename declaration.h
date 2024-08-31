@@ -23,6 +23,7 @@ constexpr char dangerPositions[9][9] = {
     {' ', ' ', ' ', 'x', ' ', 'o', ' ', ' ', 'x'}
 };
 
+extern bool win;
 extern std::string computationDetails;
 extern char superBoard[boardSize][boardSize],
             baseBoard[boardSize],

@@ -4,12 +4,12 @@
 char superBoard[boardSize][boardSize];
 char baseBoard[boardSize];
 std::string computationDetails;
-
 char turn = 'x';
-bool win = false;
 int computedMove = 4;
+bool win = false;
+
 int main() {
-    const int screenWidth = 1050;
+    const int screenWidth = 950;
     const int screenHeight = 550;
     InitWindow(screenWidth, screenHeight, "Super TicTacToe!");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
@@ -70,36 +70,11 @@ void checkInput() {
     }
 }
 
-void moveOpponent() {
-    int computedMoves[boardSize];
-    
-    for (size_t index = 0; index < boardSize; ++index) {
-        if (baseBoard[index] == ' ') {
-            computeMove(superBoard[index], index);
-            computedMoves[index] = computedMove;
-        } else {
-            computedMoves[index] = -1;
-        }
+bool checkWinner(char board[], char player) {
+    for (size_t index = 0; index < 8; ++index) {
+        if (board[winners[index][0]] == player && board[winners[index][1]] == player && board[winners[index][2]] == player) {
+            return true;
+        } 
     }
-
-    int baseComputedMove = evaluateTopMove(computedMoves);
-    
-    if (baseComputedMove >= 0 && baseComputedMove < boardSize && baseBoard[baseComputedMove] == ' ') {
-        int superComputedMove = computedMoves[baseComputedMove];
-        
-        if (superComputedMove >= 0 && superComputedMove < boardSize && superBoard[baseComputedMove][superComputedMove] == ' ') {
-            superBoard[baseComputedMove][superComputedMove] = 'o';
-            turn = 'x';
-        } else {
-            for (int i = 0; i < boardSize; ++i) {
-                if (superBoard[baseComputedMove][i] == ' ') {
-                    superBoard[baseComputedMove][i] = 'o';
-                    turn = 'x';
-                    break;
-                }
-            }
-        }
-    } else {
-        win = true;
-    }
+    return false;
 }
