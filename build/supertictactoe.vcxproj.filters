@@ -7,7 +7,7 @@
     <ClCompile Include="C:\Users\LENOVO\Documents\cppPortofolio\superTicTacToe\draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\LENOVO\Documents\cppPortofolio\superTicTacToe\opponent.cpp">
+    <ClCompile Include="C:\Users\LENOVO\Documents\cppPortofolio\superTicTacToe\bot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
