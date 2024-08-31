@@ -14,7 +14,7 @@ extern const int edges[4];
 extern const char dangerPositions[9][9];
 
 extern bool win;
-extern char computationDetails[1000];  // Adjust size as needed
+extern char computationDetails[1000];
 extern char superBoard[boardSize][boardSize];
 extern char baseBoard[boardSize];
 extern char turn;
