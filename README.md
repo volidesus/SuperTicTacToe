@@ -3,7 +3,7 @@
 Super-TicTacToe is my recreation of Super TicTacToe. Can be played against AI. Made using raylib in C++.
 
 # Screenshot
-![Screenshot](https://github.com/user-attachments/assets/f506a750-cecd-4a0a-b378-2f99ad0c3ac4)
+![Screenshot](https://github.com/user-attachments/assets/25a28b8f-137f-4a14-aa04-0b240d5d4c14)
 
 # Library
 - raylib (https://www.raylib.com/)
