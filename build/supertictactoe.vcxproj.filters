@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\LENOVO\Documents\cppPortofolio\superTicTacToe\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\LENOVO\Documents\cppPortofolio\superTicTacToe\draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\LENOVO\Documents\cppPortofolio\superTicTacToe\opponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\LENOVO\Documents\cppPortofolio\superTicTacToe\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{AD45A360-A2D9-3A67-A407-36E280275999}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
