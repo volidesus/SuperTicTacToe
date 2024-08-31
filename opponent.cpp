@@ -1,10 +1,9 @@
-#include <array>
 #include <algorithm>
 #include "raylib.h"
 #include "declaration.h"
 
-int evaluateTopMove(const std::vector<int>& computedMoves) {
-    std::vector<int> computedMoveScores(computedMoves.size(), 0);
+int evaluateTopMove(int computedMoves[]) {
+    int computedMoveScores[boardSize] = {};
 
     if (checkWinningMoves(baseBoard, 'o')) {
         computedMoveScores[computedMove] += 50;
@@ -12,43 +11,26 @@ int evaluateTopMove(const std::vector<int>& computedMoves) {
         computedMoveScores[computedMove] += 40;
     }
 
-    computationDetails = "";
-    for (size_t i = 0; i < computedMoves.size(); ++i) {
-        int move = computedMoves[i];
-        
-        for (size_t j = 0; j < 8; ++j) {
-            if (checkWinningMoves(superBoard[i], 'o')) {
-                computedMoveScores[i] += 6;
-            } else if (checkWinningMoves(superBoard[i], 'x')) {
-                computedMoveScores[i] += 5;
-            } else if (checkDangerPosition(superBoard[i])) {
-                computedMoveScores[i] += 4;
-            } 
-            
-            if (checkCentre(superBoard[i])) {
-                computedMoveScores[i] += 3;
-            } else if (checkCorner(superBoard[i])) {
-                computedMoveScores[i] += 2;
-            } else if (checkEdge(superBoard[i])) {
-                computedMoveScores[i] += 1;
-            }
-        }
-        
-        std::vector<char> emptyBoard = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
-        if (superBoard[i] == emptyBoard) {
-            computedMoveScores[i] -= 5;
-        }
+    computationDetails.clear();
+    for (size_t index = 0; index < boardSize; ++index) {
+        int move = computedMoves[index];
 
-        if (move < 0 || superBoard[i][move] != ' ') {
-            computedMoveScores[i] = 0;
-        }
+        if (checkWinningMoves(superBoard[index], 'o')) computedMoveScores[index] += 6;
+        else if (checkWinningMoves(superBoard[index], 'x')) computedMoveScores[index] += 5;
+        else if (checkDangerPosition(superBoard[index])) computedMoveScores[index] += 4;
 
-        computationDetails += "Board: " + std::to_string(i) + " Move: " + std::to_string(move) + " Score: " + std::to_string(computedMoveScores[i]) + "\n\n\n";
+        if (checkCentre(superBoard[index])) computedMoveScores[index] += 3;
+        else if (checkCorner(superBoard[index])) computedMoveScores[index] += 2;
+        else if (checkEdge(superBoard[index])) computedMoveScores[index] += 1;
+
+        if (std::all_of(std::begin(superBoard[index]), std::end(superBoard[index]), [](char c) { return c == ' '; })) computedMoveScores[index] -= 5;
+        if (move < 0 || superBoard[index][move] != ' ') computedMoveScores[index] = 0;
+        computationDetails += "Board: " + std::to_string(index) + " Move: " + std::to_string(move) + " Score: " + std::to_string(computedMoveScores[index]) + "\n\n\n";
     }
-    return static_cast<int>(std::distance(computedMoveScores.begin(), std::max_element(computedMoveScores.begin(), computedMoveScores.end())));
+    return static_cast<int>(std::distance(std::begin(computedMoveScores), std::max_element(std::begin(computedMoveScores), std::end(computedMoveScores))));
 }
 
-void computeMove(std::vector<char>& board, size_t index) {
+void computeMove(char board[], size_t index) {
     if (baseBoard[index] != ' ') {
         computedMove = -1;
         return;
@@ -65,7 +47,7 @@ void computeMove(std::vector<char>& board, size_t index) {
     if (move) computedMove = -1;
 }
 
-bool checkWinner(const std::vector<char> board, char player) {
+bool checkWinner(char board[], char player) {
     for (size_t index = 0; index < 8; ++index) {
         if (board[winners[index][0]] == player && board[winners[index][1]] == player && board[winners[index][2]] == player) {
             return true;
@@ -74,7 +56,7 @@ bool checkWinner(const std::vector<char> board, char player) {
     return false;
 }
 
-bool checkWinningMoves(const std::vector<char> board, char player) {
+bool checkWinningMoves(char board[], char player) {
     for (size_t index = 0; index < 8; ++index) {
         if (board[winners[index][0]] == player && board[winners[index][1]] == player && board[winners[index][2]] == ' ') {
             computedMove = winners[index][2];
@@ -92,9 +74,9 @@ bool checkWinningMoves(const std::vector<char> board, char player) {
     return true;
 }
 
-bool checkDangerPosition(const std::vector<char> board) {
+bool checkDangerPosition(char board[]) {
     for (size_t index = 0; index < boardSize; ++index) {
-        if (std::equal(board.begin(), board.end(), std::begin(dangerPositions[index]), std::end(dangerPositions[index])) &&
+        if (board == dangerPositions[index] &&
             board[dangerPositionComputedMove[index]] == ' ') {
             computedMove = dangerPositionComputedMove[index];
             return false;
@@ -103,7 +85,7 @@ bool checkDangerPosition(const std::vector<char> board) {
     return true;
 }
 
-bool checkCentre(std::vector<char> board) {
+bool checkCentre(char board[]) {
     if (board[4] == ' ') {
         computedMove = 4;
         return false;
@@ -111,7 +93,7 @@ bool checkCentre(std::vector<char> board) {
     return true;
 }
 
-bool checkCorner(std::vector<char> board) {
+bool checkCorner(char board[]) {
     for (size_t corner : corners) {
         if (board[corner] == ' ') {
             computedMove = static_cast<int>(corner);
@@ -121,7 +103,7 @@ bool checkCorner(std::vector<char> board) {
     return true;
 }
 
-bool checkEdge(std::vector<char> board) {
+bool checkEdge(char board[]) {
     for (size_t edge : edges) {
         if (board[edge] == ' ') {
             computedMove = static_cast<int>(edge);
