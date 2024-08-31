@@ -1,8 +1,8 @@
 #include "raylib.h"
 #include "declaration.h"
 
-std::vector<std::vector<char>> superBoard(boardSize, std::vector<char>(boardSize, ' '));
-std::vector<char> baseBoard(boardSize, ' ');
+char superBoard[boardSize][boardSize];
+char baseBoard[boardSize];
 std::string computationDetails;
 
 char turn = 'x';
@@ -14,6 +14,13 @@ int main() {
     InitWindow(screenWidth, screenHeight, "Super TicTacToe!");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60);
+
+    for (size_t boardIndex = 0; boardIndex < boardSize; ++boardIndex) {
+        baseBoard[boardIndex] = ' ';
+        for (size_t tileIndex = 0; tileIndex < boardSize; ++ tileIndex) {
+            superBoard[boardIndex][tileIndex] = ' ';
+        }
+    }
 
     while (!WindowShouldClose()) {
         if (checkWinner(baseBoard, 'o')) win = true;
@@ -64,24 +71,24 @@ void checkInput() {
 }
 
 void moveOpponent() {
-    std::vector<int> computedMoves;
+    int computedMoves[boardSize];
     
     for (size_t index = 0; index < boardSize; ++index) {
         if (baseBoard[index] == ' ') {
             computeMove(superBoard[index], index);
-            computedMoves.push_back(computedMove);
+            computedMoves[index] = computedMove;
         } else {
-            computedMoves.push_back(-1);
+            computedMoves[index] = -1;
         }
     }
 
     int baseComputedMove = evaluateTopMove(computedMoves);
     
     if (baseComputedMove >= 0 && baseComputedMove < boardSize && baseBoard[baseComputedMove] == ' ') {
-        int topComputedMove = computedMoves[baseComputedMove];
+        int superComputedMove = computedMoves[baseComputedMove];
         
-        if (topComputedMove >= 0 && topComputedMove < boardSize && superBoard[baseComputedMove][topComputedMove] == ' ') {
-            superBoard[baseComputedMove][topComputedMove] = 'o';
+        if (superComputedMove >= 0 && superComputedMove < boardSize && superBoard[baseComputedMove][superComputedMove] == ' ') {
+            superBoard[baseComputedMove][superComputedMove] = 'o';
             turn = 'x';
         } else {
             for (int i = 0; i < boardSize; ++i) {

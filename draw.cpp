@@ -7,16 +7,12 @@
 
 void drawTiles() {
     for (size_t boardIndex = 0; boardIndex < boardSize; ++boardIndex) {
-        int boardCol = static_cast<int>(boardIndex) / 3;
-        int boardRow = static_cast<int>(boardIndex) % 3;
-        int boardX = boardRow * 3 * tileSize + boardMargin;
-        int boardY = boardCol * 3 * tileSize + boardMargin;
+        int boardX = static_cast<int>(boardIndex) % 3 * 3 * tileSize + boardMargin;
+        int boardY = static_cast<int>(boardIndex) / 3 * 3 * tileSize + boardMargin;
 
         for (size_t tileIndex = 0; tileIndex < boardSize; ++tileIndex) {
-            int tileCol = static_cast<int>(tileIndex) / 3;
-            int tileRow = static_cast<int>(tileIndex) % 3;
-            int tileX = boardRow * 3 * tileSize + tileRow * tileSize + boardMargin;
-            int tileY = boardCol * 3 * tileSize + tileCol * tileSize + boardMargin;
+            int tileX = static_cast<int>(boardIndex) % 3 * 3 * tileSize + static_cast<int>(tileIndex) % 3 * tileSize + boardMargin;
+            int tileY = static_cast<int>(boardIndex) / 3 * 3 * tileSize + static_cast<int>(tileIndex) / 3 * tileSize + boardMargin;
 
             Color color = (baseBoard[boardIndex] != ' ') ? GRAY : BLACK;
             DrawRectangleLines(tileX, tileY, tileSize, tileSize, color);
