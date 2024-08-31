@@ -1,0 +1,36 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\LENOVO\\Documents\\cppPortofolio\\superTicTacToe\\build\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{18CB5D01-20A5-3A29-9EBA-CE581FC32A4C}|supertictactoe.vcxproj|C:\\Users\\LENOVO\\Documents\\cppPortofolio\\superTicTacToe\\opponent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "opponent.cpp",
+              "DocumentMoniker": "C:\\Users\\LENOVO\\Documents\\cppPortofolio\\superTicTacToe\\opponent.cpp",
+              "RelativeDocumentMoniker": "..\\opponent.cpp",
+              "ToolTip": "C:\\Users\\LENOVO\\Documents\\cppPortofolio\\superTicTacToe\\opponent.cpp",
+              "RelativeToolTip": "..\\opponent.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-08-30T08:22:35.408Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
