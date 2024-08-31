@@ -2,6 +2,40 @@
 #include "raylib.h"
 #include "declaration.h"
 
+void moveOpponent() {
+    int computedMoves[boardSize];
+    
+    for (size_t index = 0; index < boardSize; ++index) {
+        if (baseBoard[index] == ' ') {
+            computeMove(superBoard[index], index);
+            computedMoves[index] = computedMove;
+        } else {
+            computedMoves[index] = -1;
+        }
+    }
+
+    int baseComputedMove = evaluateTopMove(computedMoves);
+    
+    if (baseComputedMove >= 0 && baseComputedMove < boardSize && baseBoard[baseComputedMove] == ' ') {
+        int superComputedMove = computedMoves[baseComputedMove];
+        
+        if (superComputedMove >= 0 && superComputedMove < boardSize && superBoard[baseComputedMove][superComputedMove] == ' ') {
+            superBoard[baseComputedMove][superComputedMove] = 'o';
+            turn = 'x';
+        } else {
+            for (int i = 0; i < boardSize; ++i) {
+                if (superBoard[baseComputedMove][i] == ' ') {
+                    superBoard[baseComputedMove][i] = 'o';
+                    turn = 'x';
+                    break;
+                }
+            }
+        }
+    } else {
+        win = true;
+    }
+}
+
 int evaluateTopMove(int computedMoves[]) {
     int computedMoveScores[boardSize] = {};
 
@@ -12,6 +46,7 @@ int evaluateTopMove(int computedMoves[]) {
     }
 
     computationDetails.clear();
+    computationDetails = "Board || Move || Score";
     for (size_t index = 0; index < boardSize; ++index) {
         int move = computedMoves[index];
 
@@ -25,7 +60,11 @@ int evaluateTopMove(int computedMoves[]) {
 
         if (std::all_of(std::begin(superBoard[index]), std::end(superBoard[index]), [](char c) { return c == ' '; })) computedMoveScores[index] -= 5;
         if (move < 0 || superBoard[index][move] != ' ') computedMoveScores[index] = 0;
-        computationDetails += "Board: " + std::to_string(index) + " Move: " + std::to_string(move) + " Score: " + std::to_string(computedMoveScores[index]) + "\n\n\n";
+
+        if (computedMoveScores[index] != 0) {
+            if (index == 1) computationDetails += "\n\n\n" + std::to_string(index) + "        ||   " + std::to_string(move) + "    ||    " + std::to_string(computedMoveScores[index]);
+            else computationDetails += "\n\n\n" + std::to_string(index) + "       ||   " + std::to_string(move) + "    ||    " + std::to_string(computedMoveScores[index]);
+        }
     }
     return static_cast<int>(std::distance(std::begin(computedMoveScores), std::max_element(std::begin(computedMoveScores), std::end(computedMoveScores))));
 }
@@ -45,15 +84,6 @@ void computeMove(char board[], size_t index) {
     if (move) move = checkCorner(board);
     if (move) move = checkEdge(board);
     if (move) computedMove = -1;
-}
-
-bool checkWinner(char board[], char player) {
-    for (size_t index = 0; index < 8; ++index) {
-        if (board[winners[index][0]] == player && board[winners[index][1]] == player && board[winners[index][2]] == player) {
-            return true;
-        } 
-    }
-    return false;
 }
 
 bool checkWinningMoves(char board[], char player) {
