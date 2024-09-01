@@ -22,13 +22,8 @@ const char dangerPositions[9][9] = {
 void moveOpponent(void) {
     int computedMoves[boardSize];
     
-    for (size_t index = 0; index < boardSize; ++index) {
-        if (baseBoard[index] == ' ') {
-            computeMove(superBoard[index], index);
-            computedMoves[index] = computedMove;
-        } else {
-            computedMoves[index] = -1;
-        }
+    for (int i = 0; i < boardSize; i++) {
+        computedMoves[i] = (baseBoard[i] == ' ') ? computeMove(superBoard[i]) : -1;
     }
 
     int baseComputedMove = evaluateTopMove(computedMoves);
@@ -38,63 +33,57 @@ void moveOpponent(void) {
         
         if (superComputedMove >= 0 && superComputedMove < boardSize && superBoard[baseComputedMove][superComputedMove] == ' ') {
             superBoard[baseComputedMove][superComputedMove] = 'o';
-            turn = 'x';
         } else {
-            for (int i = 0; i < boardSize; ++i) {
+            for (int i = 0; i < boardSize; i++) {
                 if (superBoard[baseComputedMove][i] == ' ') {
                     superBoard[baseComputedMove][i] = 'o';
-                    turn = 'x';
                     break;
                 }
             }
         }
+        turn = 'x';
     } else {
-        win = true;
+        resetGame();
     }
 }
 
 int evaluateTopMove(int computedMoves[]) {
     int computedMoveScores[boardSize] = {0};
+    char buffer[100];
 
-    if (checkWinningMoves(baseBoard, 'o')) {
-        computedMoveScores[computedMove] += 50;
-    } else if (checkWinningMoves(baseBoard, 'x')) {
-        computedMoveScores[computedMove] += 40;
-    }
+    computedMoveScores[computedMove] += checkWinningMoves(baseBoard, 'o') ? 50 : (checkWinningMoves(baseBoard, 'x') ? 40 : 0);
 
-    memset(computationDetails, 0, sizeof(computationDetails));
-    strcat(computationDetails, "Board || Move || Score");
-    for (size_t index = 0; index < boardSize; ++index) {
-        int move = computedMoves[index];
-
-        if (checkWinningMoves(superBoard[index], 'o')) computedMoveScores[index] += 6;
-        else if (checkWinningMoves(superBoard[index], 'x')) computedMoveScores[index] += 5;
-        else if (checkDangerPosition(superBoard[index])) computedMoveScores[index] += 4;
-
-        if (checkCentre(superBoard[index])) computedMoveScores[index] += 3;
-        else if (checkCorner(superBoard[index])) computedMoveScores[index] += 2;
-        else if (checkEdge(superBoard[index])) computedMoveScores[index] += 1;
+    snprintf(computationDetails, sizeof(computationDetails), "Board || Move || Score");
+    
+    for (int i = 0; i < boardSize; i++) {
+        int move = computedMoves[i];
+        if (checkWinningMoves(superBoard[i], 'o')) computedMoveScores[i] += 6;
+        else if (checkWinningMoves(superBoard[i], 'x')) computedMoveScores[i] += 5;
+        else if (checkDangerPosition(superBoard[i])) computedMoveScores[i] += 4;
+        else if (checkCentre(superBoard[i])) computedMoveScores[i] += 3;
+        else if (checkCorner(superBoard[i])) computedMoveScores[i] += 2;
+        else if (checkEdge(superBoard[i])) computedMoveScores[i] += 1;
 
         int allEmpty = 1;
-        for (int i = 0; i < boardSize; ++i) {
-            if (superBoard[index][i] != ' ') {
+        for (int j = 0; j < boardSize; j++) {
+            if (superBoard[i][j] != ' ') {
                 allEmpty = 0;
                 break;
             }
         }
-        if (allEmpty) computedMoveScores[index] -= 5;
-        if (move < 0 || superBoard[index][move] != ' ') computedMoveScores[index] = 0;
+        if (allEmpty) computedMoveScores[i] -= 5;
+        if (move < 0 || superBoard[i][move] != ' ') computedMoveScores[i] = 0;
 
-        if (computedMoveScores[index] != 0) {
-            char buffer[100];
-            sprintf(buffer, "\n\n\n%zu       ||   %d    ||    %d", index, move, computedMoveScores[index]);
-            strcat(computationDetails, buffer);
+        if (computedMoveScores[i] != 0) {
+            snprintf(buffer, sizeof(buffer), "\n\n\n%d     ||   %d  ||    %d", i, move, computedMoveScores[i]);
+            size_t remaining = sizeof(computationDetails) - strlen(computationDetails) - 1;
+            strncat(computationDetails, buffer, remaining);
         }
     }
     
     int maxScore = computedMoveScores[0];
     int maxIndex = 0;
-    for (int i = 1; i < boardSize; ++i) {
+    for (int i = 1; i < boardSize; i++) {
         if (computedMoveScores[i] > maxScore) {
             maxScore = computedMoveScores[i];
             maxIndex = i;
@@ -103,76 +92,67 @@ int evaluateTopMove(int computedMoves[]) {
     return maxIndex;
 }
 
-void computeMove(char board[], size_t index) {
-    if (baseBoard[index] != ' ') {
-        computedMove = -1;
-        return;
+int computeMove(char board[]) {
+    if (!checkWinningMoves(board, 'o') &&
+        !checkWinningMoves(board, 'x') &&
+        !checkDangerPosition(board) &&
+        !checkCentre(board) &&
+        !checkCorner(board) &&
+        !checkEdge(board)) {
+        return -1;
     }
-
-    bool move = true;
-    computedMove = 4;
-    move = checkWinningMoves(board, 'o');
-    if (move) move = checkWinningMoves(board, 'x');
-    if (move) move = checkDangerPosition(board);
-    if (move) move = checkCentre(board);
-    if (move) move = checkCorner(board);
-    if (move) move = checkEdge(board);
-    if (move) computedMove = -1;
+    return computedMove;
 }
 
 bool checkWinningMoves(char board[], char player) {
-    for (size_t index = 0; index < 8; ++index) {
-        if (board[winners[index][0]] == player && board[winners[index][1]] == player && board[winners[index][2]] == ' ') {
-            computedMove = winners[index][2];
-            return false;
-        } 
-        else if (board[winners[index][0]] == player && board[winners[index][1]] == ' ' && board[winners[index][2]] == player) {
-            computedMove = winners[index][1];
-            return false;
-        } 
-        else if (board[winners[index][0]] == ' ' && board[winners[index][1]] == player && board[winners[index][2]] == player) {
-            computedMove = winners[index][0];
-            return false;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[winners[i][j]] == ' ' &&
+                board[winners[i][(j+1)%3]] == player &&
+                board[winners[i][(j+2)%3]] == player) {
+                computedMove = winners[i][j];
+                return true;
+            }
         }
     }
-    return true;
+    return false;
 }
 
 bool checkDangerPosition(const char board[]) {
-    for (size_t index = 0; index < boardSize; ++index) {
-        if (memcmp(board, dangerPositions[index], boardSize) == 0 &&
-            board[dangerPositionComputedMove[index]] == ' ') {
-            computedMove = dangerPositionComputedMove[index];
-            return false;
+    for (int i = 0; i < boardSize; i++) {
+        if (memcmp(board, dangerPositions[i], boardSize) == 0 &&
+            board[dangerPositionComputedMove[i]] == ' ') {
+            computedMove = dangerPositionComputedMove[i];
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 bool checkCentre(const char board[]) {
     if (board[4] == ' ') {
         computedMove = 4;
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 bool checkCorner(const char board[]) {
-    for (size_t i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; i++) {
         if (board[corners[i]] == ' ') {
             computedMove = corners[i];
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 bool checkEdge(const char board[]) {
-    for (size_t i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; i++) {
         if (board[edges[i]] == ' ') {
             computedMove = edges[i];
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
