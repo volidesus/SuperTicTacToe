@@ -7,63 +7,96 @@ char baseBoard[boardSize];
 char computationDetails[1000] = "";
 char turn = 'x';
 int computedMove = 4;
-bool win = false;
+int state = 0;
+Font prstart;
 
 int main(void) {
-    const int screenWidth = 950;
-    const int screenHeight = 550;
-    InitWindow(screenWidth, screenHeight, "Super TicTacToe!");
-    SetWindowState(FLAG_WINDOW_RESIZABLE);
-    SetTargetFPS(60);
-
-    for (size_t boardIndex = 0; boardIndex < boardSize; ++boardIndex) {
-        baseBoard[boardIndex] = ' ';
-        for (size_t tileIndex = 0; tileIndex < boardSize; ++tileIndex) {
-            superBoard[boardIndex][tileIndex] = ' ';
-        }
-    }
-
+    initializeGame();
     while (!WindowShouldClose()) {
-        if (checkWinner(baseBoard, 'o')) win = true;
-        if (checkWinner(baseBoard, 'x')) win = true;
-        for (size_t index = 0; index < boardSize; ++index) {
+        for (int index = 0; index < boardSize; ++index) {
             if (checkWinner(superBoard[index], 'o')) baseBoard[index] = 'o';
             if (checkWinner(superBoard[index], 'x')) baseBoard[index] = 'x';
         }
 
-        if (!win) {
-            if (turn == 'o') moveOpponent();
-            checkInput();
-        }
+        if (checkWinner(baseBoard, 'o')) resetGame();
+        if (checkWinner(baseBoard, 'x')) resetGame();
 
         BeginDrawing();
-            ClearBackground(RAYWHITE);
+        ClearBackground(RAYWHITE);
+        if (state == 0) {
+            checkMenuInput();
+            drawMenu();
+        } else if (state == 1) {
+            if (turn == 'o') moveOpponent();
+            checkGameInput('x');
             drawTiles();
             drawComputationDetails();
+        } else if (state == 2) {
+            checkGameInput('x');
+            checkGameInput('o');
+            drawTiles();
+        }
         EndDrawing();
     }
-    CloseWindow();
+    cleanupGame();
     return 0;
 }
 
-void checkInput(void) {
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && turn == 'x') {
-        for (size_t boardIndex = 0; boardIndex < boardSize; ++boardIndex) {
-            int boardCol = (int)(boardIndex) / 3;
-            int boardRow = (int)(boardIndex) % 3;
+void resetGame(void) {
+    state = 0;
+    memset(superBoard, ' ', sizeof(superBoard));
+    memset(baseBoard, ' ', sizeof(baseBoard));
+}
 
-            for (size_t tileIndex = 0; tileIndex < boardSize; ++tileIndex) {
-                int tileCol = (int)(tileIndex) / 3;
-                int tileRow = (int)(tileIndex) % 3;
-                int x = boardRow * 3 * tileSize + tileRow * tileSize + boardMargin;
-                int y = boardCol * 3 * tileSize + tileCol * tileSize + boardMargin;
+void initializeGame(void) {
+    const int screenWidth = 1200;
+    const int screenHeight = 550;
+    InitWindow(screenWidth, screenHeight, "Super TicTacToe!");
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
+    SetTargetFPS(60);
+    
+    prstart = LoadFont("res/prstart.ttf");
+
+    for (int boardIndex = 0; boardIndex < boardSize; ++boardIndex) {
+        baseBoard[boardIndex] = ' ';
+        for (int tileIndex = 0; tileIndex < boardSize; ++tileIndex) {
+            superBoard[boardIndex][tileIndex] = ' ';
+        }
+    }
+}
+
+void cleanupGame(void) {
+    UnloadFont(prstart);
+    CloseWindow();
+}
+
+void checkMenuInput(void) {
+    Rectangle singlePlayerButton = { GetScreenWidth() / 2.0f - 250, 200, 500, 60 };
+    Rectangle twoPlayersButton = { GetScreenWidth() / 2.0f - 250, 300, 500, 60 };
+    
+    Vector2 mousePosition = GetMousePosition();
+    
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if (CheckCollisionPointRec(mousePosition, singlePlayerButton)) {
+            state = 1;
+        } else if (CheckCollisionPointRec(mousePosition, twoPlayersButton)) {
+            state = 2;
+        }
+    }
+}
+
+void checkGameInput(char player) {
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && turn == player) {
+        for (int boardIndex = 0; boardIndex < boardSize; ++boardIndex) {
+            for (int tileIndex = 0; tileIndex < boardSize; ++tileIndex) {
+                int x = boardIndex % 3 * 3 * tileSize + tileIndex % 3 * tileSize + boardMargin;
+                int y = boardIndex / 3 * 3 * tileSize + tileIndex / 3 * tileSize + boardMargin;
 
                 Rectangle tile = { (float)x, (float)y, (float)tileSize, (float)tileSize };
-
                 if (CheckCollisionPointRec(GetMousePosition(), tile) && superBoard[boardIndex][tileIndex] == ' ' && 
                     baseBoard[boardIndex] == ' ') {
-                    superBoard[boardIndex][tileIndex] = 'x';
-                    turn = 'o';
+                    superBoard[boardIndex][tileIndex] = player;
+                    turn = (player == 'x') ? 'o' : 'x';
                 }
             }
         }
@@ -71,7 +104,7 @@ void checkInput(void) {
 }
 
 bool checkWinner(const char board[], char player) {
-    for (size_t index = 0; index < 8; ++index) {
+    for (int index = 0; index < 8; ++index) {
         if (board[winners[index][0]] == player && board[winners[index][1]] == player && board[winners[index][2]] == player) {
             return true;
         } 
