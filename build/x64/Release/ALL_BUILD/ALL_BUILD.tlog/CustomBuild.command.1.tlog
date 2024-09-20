@@ -1,6 +1,6 @@
 ^C:\USERS\LENOVO\DOCUMENTS\CPPPORTOFOLIO\SUPERTICTACTOE\CMAKELISTS.TXT
 setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/LENOVO/Documents/cppPortofolio/superTicTacToe -BC:/Users/LENOVO/Documents/cppPortofolio/superTicTacToe/build --check-stamp-file C:/Users/LENOVO/Documents/cppPortofolio/superTicTacToe/build/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/LENOVO/Documents/cppPortofolio/SuperTicTacToe -BC:/Users/LENOVO/Documents/cppPortofolio/SuperTicTacToe/build --check-stamp-file C:/Users/LENOVO/Documents/cppPortofolio/SuperTicTacToe/build/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
